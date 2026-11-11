@@ -1,0 +1,6 @@
+# OS and editor junk that should never be committed, in any part of the monorepo
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
