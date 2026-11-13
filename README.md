@@ -1,2 +1,2 @@
 # Klokin
-Attendance and leave that runs itself.
+Attendance and leave that runs automatically.
