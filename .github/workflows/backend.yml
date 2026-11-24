@@ -1,0 +1,35 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run tests
+        run: ./mvnw -B test 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+
+      # On failure, surface the Maven errors as annotations so they show on the commit
+      - name: Show build errors
+        if: failure()
+        run: grep -E "\[ERROR\]" build.log | head -40 | sed 's/^/::error::/'
