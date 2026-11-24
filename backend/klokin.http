@@ -1,0 +1,25 @@
+### Is the API up?
+GET http://localhost:8080/api/health
+
+### Create a company (leave fields out to get SA defaults)
+POST http://localhost:8080/api/companies
+Content-Type: application/json
+
+{
+  "name": "Demo Signs & Print",
+  "saturdayStart": "09:00",
+  "saturdayEnd": "13:00"
+}
+
+### All companies
+GET http://localhost:8080/api/companies
+
+### Validation error: 400 with a clear reason
+POST http://localhost:8080/api/companies
+Content-Type: application/json
+
+{
+  "name": "Bad Hours",
+  "weekdayStart": "17:00",
+  "weekdayEnd": "08:00"
+}
