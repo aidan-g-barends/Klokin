@@ -1,18 +1,73 @@
 ### Is the API up?
 GET http://localhost:8080/api/health
 
+### Companies (the dev profile seeds "Demo Signs & Print" as company 1)
+GET http://localhost:8080/api/companies
+
 ### Create a company (leave fields out to get SA defaults)
 POST http://localhost:8080/api/companies
 Content-Type: application/json
 
 {
-  "name": "Demo Signs & Print",
+  "name": "My Test Company",
   "saturdayStart": "09:00",
   "saturdayEnd": "13:00"
 }
 
-### All companies
-GET http://localhost:8080/api/companies
+### Staff of company 1
+GET http://localhost:8080/api/companies/1/employees
+
+### Add an employee
+POST http://localhost:8080/api/companies/1/employees
+Content-Type: application/json
+
+{
+  "firstName": "Sam",
+  "lastName": "Daniels",
+  "phone": "082 555 1234"
+}
+
+### Work locations the phone watches (geofences)
+GET http://localhost:8080/api/companies/1/locations
+
+### Clients
+GET http://localhost:8080/api/companies/1/clients
+
+### Pick or add a client from the phone (same name twice = same client)
+POST http://localhost:8080/api/companies/1/clients
+Content-Type: application/json
+
+{
+  "name": "harbour cafe"
+}
+
+### Lee's month: the heatmap data (leave out ?month for the current month)
+GET http://localhost:8080/api/employees/1/attendance
+
+### Last month
+GET http://localhost:8080/api/employees/1/attendance?month=2026-10
+
+### Boss live feed
+GET http://localhost:8080/api/companies/1/feed?limit=20
+
+### Phone sync. Run it twice: the second time it comes back DUPLICATE and nothing is saved twice.
+POST http://localhost:8080/api/sync/events
+Content-Type: application/json
+
+{
+  "employeeId": 1,
+  "events": [
+    {
+      "eventUuid": "9b2f6a8e-3c41-4d7a-a5e2-1f0c7d9b4e21",
+      "type": "SITE_ARRIVE",
+      "source": "MANUAL",
+      "occurredAt": "2026-11-24T08:30:00Z",
+      "latitude": -33.0812,
+      "longitude": 18.0291,
+      "clientId": 1
+    }
+  ]
+}
 
 ### Validation error: 400 with a clear reason
 POST http://localhost:8080/api/companies
