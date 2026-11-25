@@ -10,11 +10,13 @@ import com.klokin.backend.domain.TimeEvent;
 import com.klokin.backend.domain.WorkLocation;
 import com.klokin.backend.factory.ClientFactory;
 import com.klokin.backend.factory.CompanyFactory;
+import com.klokin.backend.factory.CorrectionRequestFactory;
 import com.klokin.backend.factory.EmployeeFactory;
 import com.klokin.backend.factory.TimeEventFactory;
 import com.klokin.backend.factory.WorkLocationFactory;
 import com.klokin.backend.repository.ClientRepository;
 import com.klokin.backend.repository.CompanyRepository;
+import com.klokin.backend.repository.CorrectionRequestRepository;
 import com.klokin.backend.repository.EmployeeRepository;
 import com.klokin.backend.repository.TimeEventRepository;
 import com.klokin.backend.repository.WorkLocationRepository;
@@ -48,16 +50,19 @@ public class DevDataSeeder implements CommandLineRunner {
     private final WorkLocationRepository workLocationRepository;
     private final ClientRepository clientRepository;
     private final TimeEventRepository timeEventRepository;
+    private final CorrectionRequestRepository correctionRequestRepository;
     private final Clock clock;
 
     public DevDataSeeder(CompanyRepository companyRepository, EmployeeRepository employeeRepository,
                          WorkLocationRepository workLocationRepository, ClientRepository clientRepository,
-                         TimeEventRepository timeEventRepository, Clock clock) {
+                         TimeEventRepository timeEventRepository,
+                         CorrectionRequestRepository correctionRequestRepository, Clock clock) {
         this.companyRepository = companyRepository;
         this.employeeRepository = employeeRepository;
         this.workLocationRepository = workLocationRepository;
         this.clientRepository = clientRepository;
         this.timeEventRepository = timeEventRepository;
+        this.correctionRequestRepository = correctionRequestRepository;
         this.clock = clock;
     }
 
@@ -105,6 +110,15 @@ public class DevDataSeeder implements CommandLineRunner {
         }
 
         timeEventRepository.saveAll(seed.events());
+
+        // Lee forgot to clock out on the 12th; his correction waits in the boss inbox.
+        // Approve it and that day turns from INCOMPLETE to WORKED.
+        LocalDate lastTwelfth = today.getDayOfMonth() > 12
+                ? today.withDayOfMonth(12)
+                : today.minusMonths(1).withDayOfMonth(12);
+        correctionRequestRepository.save(CorrectionRequestFactory.create(staff.get(0), lastTwelfth,
+                null, LocalTime.of(17, 0), "Forgot to clock out"));
+
         log.info("Seeded demo data: {} staff, {} events. Try GET /api/employees/{}/attendance",
                 staff.size(), seed.events().size(), staff.get(0).getId());
     }
