@@ -68,7 +68,7 @@ public final class TimeEventFactory {
         }
 
         Instant receivedAt = Instant.now();
-        List<String> flags = flagsFor(type, occurredAt, receivedAt, hasLocation, latitude, longitude,
+        List<String> flags = flagsFor(type, source, occurredAt, receivedAt, hasLocation, latitude, longitude,
                 client, workLocations);
 
         return new TimeEvent.Builder()
@@ -87,14 +87,15 @@ public final class TimeEventFactory {
     }
 
     // Flags don't block an event (the work really may have happened); they just tell the boss to look
-    private static List<String> flagsFor(EventType type, Instant occurredAt, Instant receivedAt,
+    private static List<String> flagsFor(EventType type, EventSource source, Instant occurredAt, Instant receivedAt,
                                          boolean hasLocation, Double latitude, Double longitude,
                                          Client client, List<WorkLocation> workLocations) {
         List<String> flags = new ArrayList<>();
 
         boolean needsLocation = type == EventType.CLOCK_IN || type == EventType.CLOCK_OUT
                 || type == EventType.SITE_ARRIVE;
-        if (needsLocation && !hasLocation) {
+        // A correction the boss approved has no GPS by design, so it isn't flagged
+        if (needsLocation && !hasLocation && source != EventSource.CORRECTION) {
             flags.add(FLAG_NO_LOCATION);
         }
 
