@@ -78,3 +78,22 @@ Content-Type: application/json
   "weekdayStart": "17:00",
   "weekdayEnd": "08:00"
 }
+
+### Lee: "my hours are wrong" (forgot to clock out)
+POST http://localhost:8080/api/employees/1/corrections
+Content-Type: application/json
+
+{
+  "workDate": "2026-11-20",
+  "clockOut": "17:00",
+  "reason": "Forgot to clock out"
+}
+
+### Boss inbox: corrections waiting for a decision (the dev data seeds one for Lee)
+GET http://localhost:8080/api/companies/1/corrections/pending
+
+### Approve correction 1, then run "Lee's month" again: the 12th turns from INCOMPLETE to WORKED
+POST http://localhost:8080/api/corrections/1/approve
+
+### Reject correction 2
+POST http://localhost:8080/api/corrections/2/reject
