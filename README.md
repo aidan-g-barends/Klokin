@@ -21,6 +21,7 @@ Most small businesses still track attendance on paper, in Excel or over WhatsApp
 - **Works offline:** every clock-in is saved on the phone first and synced later, so staff without data aren't penalised. Syncing twice never saves anything twice.
 - **Changing client sites:** installers tap "I'm on site" and pick or add the client. Travel and site time count as work.
 - **Hours that add up themselves:** a GitHub-style heatmap of the month with a running total ("201 hours this month"), lunch rules and overtime worked out automatically.
+- **Fixes without arguments:** staff send a correction request ("forgot to clock out"), the boss approves it, and the day recalculates itself.
 - **Live feed for the boss:** who clocked in, when and where, with flags for anything that needs a look (location off, phone clock changed, clocked in away from work).
 
 ## Tech stack
@@ -72,6 +73,9 @@ Run the tests with `./mvnw test`.
 | POST | `/api/sync/events` | Offline-safe sync of clock-ins from a phone |
 | GET | `/api/companies/{id}/feed` | Live feed of clock-ins for the boss |
 | GET | `/api/employees/{id}/attendance?month=2026-11` | Monthly hours, overtime and heatmap data |
+| POST, GET | `/api/employees/{id}/corrections` | "My hours are wrong" requests |
+| GET | `/api/companies/{id}/corrections/pending` | Boss inbox of corrections waiting for a decision |
+| POST | `/api/corrections/{id}/approve` and `/reject` | Approve (adds the missing clock-in or clock-out) or reject |
 
 ## Status
 
